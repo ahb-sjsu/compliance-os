@@ -1,0 +1,24 @@
+@media print {
+  .np-hide,
+  .sb,
+  .topbar,
+  .tabs,
+  .btn,
+  .nav-i,
+  select,
+  button {
+    display: none !important;
+  }
+  .content {
+    padding: 0;
+    overflow: visible;
+  }
+  body,
+  #root,
+  .layout,
+  .main {
+    display: block;
+    height: auto;
+    overflow: visible;
+  }
+}
