@@ -1,7 +1,9 @@
 {
   "name": "compliance-os",
   "private": true,
-  "version": "0.0.0",
+  "version": "2.0.0",
+  "license": "BUSL-1.1",
+  "description": "Vendor compliance management dashboard for small businesses",
   "type": "module",
   "scripts": {
     "dev": "vite",

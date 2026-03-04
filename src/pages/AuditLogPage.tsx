@@ -1,10 +1,16 @@
 import type { AuditEntry } from '../types/vendor';
+import { usePlan } from '../plan/usePlan';
 
 interface AuditLogPageProps {
   globalAudit: AuditEntry[];
 }
 
 export default function AuditLogPage({ globalAudit }: AuditLogPageProps) {
+  const { plan } = usePlan();
+  const limit = plan.limits.maxAuditLogEntries;
+  const entries = limit === Infinity ? globalAudit : globalAudit.slice(0, limit);
+  const truncated = globalAudit.length > entries.length;
+
   return (
     <>
       <div className="al al-i">
@@ -22,14 +28,14 @@ export default function AuditLogPage({ globalAudit }: AuditLogPageProps) {
             </tr>
           </thead>
           <tbody>
-            {globalAudit.length === 0 && (
+            {entries.length === 0 && (
               <tr>
                 <td colSpan={4}>
                   <div className="es">No audit entries</div>
                 </td>
               </tr>
             )}
-            {globalAudit.map((e, i) => (
+            {entries.map((e, i) => (
               <tr key={i}>
                 <td
                   style={{
@@ -51,6 +57,18 @@ export default function AuditLogPage({ globalAudit }: AuditLogPageProps) {
           </tbody>
         </table>
       </div>
+      {truncated && (
+        <div
+          style={{
+            textAlign: 'center',
+            padding: '12px 0',
+            fontSize: 12,
+            color: 'var(--text3)',
+          }}
+        >
+          Showing {limit} of {globalAudit.length} entries. Upgrade to Pro for full audit history.
+        </div>
+      )}
     </>
   );
 }

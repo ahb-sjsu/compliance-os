@@ -3,6 +3,9 @@ import type { Vendor } from '../types/vendor';
 import type { AppSettings } from '../types/settings';
 import { daysUntil } from '../helpers/dates';
 import { StatusBadge, TierBadge } from '../components/ui/Badge';
+import { usePlan } from '../plan/usePlan';
+import { FREE_REPORT_IDS } from '../plan/plans';
+import { UpgradePrompt } from '../plan/UpgradePrompt';
 
 interface ReportsProps {
   vendors: Vendor[];
@@ -17,6 +20,7 @@ interface ReportDef {
 }
 
 export default function Reports({ vendors, settings: S }: ReportsProps) {
+  const { hasFeature } = usePlan();
   const [active, setActive] = useState<string | null>(null);
 
   const RPTS: ReportDef[] = [
@@ -106,37 +110,48 @@ export default function Reports({ vendors, settings: S }: ReportsProps) {
   return (
     <>
       <div className="rg">
-        {RPTS.map((r) => (
-          <div
-            key={r.id}
-            className="rc"
-            style={{
-              outline: active === r.id ? '2px solid var(--ink)' : '',
-            }}
-            onClick={() => setActive((p) => (p === r.id ? null : r.id))}
-          >
-            <div style={{ fontWeight: 700, fontSize: 14, marginBottom: 4 }}>{r.label}</div>
+        {RPTS.map((r) => {
+          const locked = !hasFeature('advancedReports') && !FREE_REPORT_IDS.includes(r.id);
+          return (
             <div
+              key={r.id}
+              className="rc"
               style={{
-                fontSize: 12,
-                color: 'var(--text2)',
-                lineHeight: 1.4,
-                marginBottom: 8,
+                outline: active === r.id ? '2px solid var(--ink)' : '',
+                opacity: locked ? 0.5 : 1,
+                cursor: locked ? 'not-allowed' : 'pointer',
+              }}
+              onClick={() => {
+                if (locked) return;
+                setActive((p) => (p === r.id ? null : r.id));
               }}
             >
-              {r.desc}
+              <div style={{ fontWeight: 700, fontSize: 14, marginBottom: 4, display: 'flex', gap: 6, alignItems: 'center' }}>
+                {r.label}
+                {locked && <UpgradePrompt feature={r.label} inline />}
+              </div>
+              <div
+                style={{
+                  fontSize: 12,
+                  color: 'var(--text2)',
+                  lineHeight: 1.4,
+                  marginBottom: 8,
+                }}
+              >
+                {r.desc}
+              </div>
+              <div
+                style={{
+                  fontSize: 12,
+                  fontFamily: '"JetBrains Mono",monospace',
+                  color: 'var(--text3)',
+                }}
+              >
+                {r.fn().length} vendors
+              </div>
             </div>
-            <div
-              style={{
-                fontSize: 12,
-                fontFamily: '"JetBrains Mono",monospace',
-                color: 'var(--text3)',
-              }}
-            >
-              {r.fn().length} vendors
-            </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
       {active && cur && (
         <div>
@@ -152,12 +167,16 @@ export default function Reports({ vendors, settings: S }: ReportsProps) {
               {cur.label} ({data.length})
             </div>
             <div style={{ display: 'flex', gap: 8 }}>
-              <button className="btn bs bsm" onClick={() => exportCSV(data, cur.label)}>
-                Export CSV
-              </button>
-              <button className="btn bs bsm" onClick={() => window.print()}>
-                Print / PDF
-              </button>
+              {hasFeature('csvExport') && (
+                <button className="btn bs bsm" onClick={() => exportCSV(data, cur.label)}>
+                  Export CSV
+                </button>
+              )}
+              {hasFeature('printPdf') && (
+                <button className="btn bs bsm" onClick={() => window.print()}>
+                  Print / PDF
+                </button>
+              )}
               <button className="btn bs bsm" onClick={() => setActive(null)}>
                 Close
               </button>

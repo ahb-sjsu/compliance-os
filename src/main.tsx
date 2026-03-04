@@ -4,6 +4,7 @@ import { GoogleOAuthProvider } from '@react-oauth/google';
 import { AuthProvider } from './auth/AuthContext';
 import { SettingsProvider } from './settings/SettingsContext';
 import { StorageContextProvider } from './storage/StorageContext';
+import { PlanProvider } from './plan/PlanContext';
 import { App } from './App';
 import './assets/styles/index.css';
 
@@ -13,11 +14,13 @@ createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
       <AuthProvider>
-        <SettingsProvider>
-          <StorageContextProvider>
-            <App />
-          </StorageContextProvider>
-        </SettingsProvider>
+        <PlanProvider>
+          <SettingsProvider>
+            <StorageContextProvider>
+              <App />
+            </StorageContextProvider>
+          </SettingsProvider>
+        </PlanProvider>
       </AuthProvider>
     </GoogleOAuthProvider>
   </StrictMode>,

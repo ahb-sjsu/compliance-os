@@ -1,5 +1,6 @@
 import type { AppSettings } from '../../types/settings';
 import { can, type Role } from '../../constants/roles';
+import { usePlan } from '../../plan/usePlan';
 
 interface NavItem {
   id: string;
@@ -17,6 +18,7 @@ interface SidebarProps {
 }
 
 export function Sidebar({ tab, setTab, role, settings: S, missingCount }: SidebarProps) {
+  const { tier, hasFeature } = usePlan();
   const sbWidth = ({ narrow: 172, normal: 200, wide: 240 } as Record<string, number>)[S.sidebarWidth] || 200;
 
   const NAV: NavItem[] = [
@@ -24,7 +26,9 @@ export function Sidebar({ tab, setTab, role, settings: S, missingCount }: Sideba
     { id: 'vendors', icon: '\uD83C\uDFE2', label: 'Vendors', badge: missingCount > 0 ? missingCount : null },
     { id: 'reports', icon: '\uD83D\uDCCA', label: 'Reports' },
     { id: 'auditlog', icon: '\uD83D\uDCCB', label: 'Audit Log' },
-    ...(can(role, 'all') ? [{ id: 'frameworks', icon: '\uD83C\uDFDB', label: 'Frameworks (Admin)' }] : []),
+    ...(can(role, 'all') && hasFeature('frameworks')
+      ? [{ id: 'frameworks', icon: '\uD83C\uDFDB', label: 'Frameworks (Admin)' }]
+      : []),
     ...(can(role, 'all') ? [{ id: 'settings', icon: '\u2699', label: 'Settings' }] : []),
   ];
 
@@ -53,6 +57,16 @@ export function Sidebar({ tab, setTab, role, settings: S, missingCount }: Sideba
         </div>
         <div style={{ fontSize: '8.5px', fontFamily: '"JetBrains Mono",monospace', color: 'var(--text3)' }}>
           {S.sidebarFooter}
+        </div>
+        <div
+          style={{
+            marginTop: 8,
+            fontSize: 10,
+            fontFamily: '"JetBrains Mono",monospace',
+            color: tier === 'pro' ? '#86efac' : '#fbbf24',
+          }}
+        >
+          {tier === 'pro' ? 'PRO' : 'FREE PLAN'}
         </div>
       </div>
     </aside>

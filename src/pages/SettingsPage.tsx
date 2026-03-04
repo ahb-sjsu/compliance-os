@@ -1,5 +1,7 @@
 import { useState, type ReactNode } from 'react';
 import { useSettings } from '../settings/useSettings';
+import { usePlan } from '../plan/usePlan';
+import { PLANS } from '../plan/plans';
 
 function SectionTitle({ children }: { children: ReactNode }) {
   return <div className="settings-section-title">{children}</div>;
@@ -53,6 +55,7 @@ const PRESETS = ['#1a1816', '#1e40af', '#166534', '#7c3aed', '#9a3412', '#1e3a5f
 
 export default function SettingsPage() {
   const { settings: S, update, reset } = useSettings();
+  const { tier, plan, setPlan, hasFeature } = usePlan();
   const [confirmReset, setConfirmReset] = useState(false);
 
   return (
@@ -95,6 +98,44 @@ export default function SettingsPage() {
       </div>
 
       <div className="settings-section">
+        <SectionTitle>Plan</SectionTitle>
+        <div style={{ display: 'flex', gap: 12, marginBottom: 8 }}>
+          {(['free', 'pro'] as const).map((t) => {
+            const p = PLANS[t];
+            const active = tier === t;
+            return (
+              <div
+                key={t}
+                onClick={() => setPlan(t)}
+                style={{
+                  flex: 1,
+                  padding: '14px 16px',
+                  borderRadius: 8,
+                  border: active ? '2px solid var(--ink)' : '1px solid var(--border)',
+                  cursor: 'pointer',
+                  background: active ? 'rgba(255,255,255,.06)' : 'transparent',
+                }}
+              >
+                <div style={{ fontWeight: 700, fontSize: 14, marginBottom: 2 }}>
+                  {p.name}{' '}
+                  <span style={{ fontWeight: 400, fontSize: 12, color: 'var(--text3)' }}>{p.price}</span>
+                </div>
+                <div style={{ fontSize: 11, color: 'var(--text2)', lineHeight: 1.5 }}>
+                  {t === 'free'
+                    ? `${p.limits.maxVendors} vendors, basic reports`
+                    : 'Unlimited vendors, exports, frameworks, risk, customization'}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+        <div style={{ fontSize: 11, color: 'var(--text3)', marginBottom: 4 }}>
+          Current plan: <strong>{plan.name}</strong> — {plan.limits.maxVendors === Infinity ? 'unlimited' : plan.limits.maxVendors} vendors,{' '}
+          {plan.limits.maxDocsPerVendor === Infinity ? 'unlimited' : plan.limits.maxDocsPerVendor} docs/vendor
+        </div>
+      </div>
+
+      <div className="settings-section">
         <SectionTitle>Branding</SectionTitle>
         <Row label="Organization Name" hint="Shown in the sidebar subtitle and on exports">
           <Inp val={S.orgName} onChange={(v) => update({ orgName: v })} placeholder="Justice Innovations" />
@@ -114,8 +155,8 @@ export default function SettingsPage() {
         </Row>
       </div>
 
-      <div className="settings-section">
-        <SectionTitle>Appearance</SectionTitle>
+      <div className="settings-section" style={!hasFeature('customization') ? { opacity: 0.45, pointerEvents: 'none' } : undefined}>
+        <SectionTitle>Appearance {!hasFeature('customization') && <span style={{ fontSize: 10, color: '#fbbf24', fontWeight: 400 }}> PRO</span>}</SectionTitle>
         <Row label="Accent Color" hint="Active nav, buttons, vendor profile header">
           <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
             {PRESETS.map((c) => (

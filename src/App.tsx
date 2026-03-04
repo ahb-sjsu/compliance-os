@@ -12,6 +12,7 @@ import { ExportModal } from './modals/ExportModal';
 import { FWReportModal } from './modals/FWReportModal';
 import { useVendors, useFilteredVendors } from './hooks/useVendors';
 import { useSettings } from './settings/useSettings';
+import { usePlan } from './plan/usePlan';
 import { can, type Role } from './constants/roles';
 import { SEED_VENDORS, SEED_AUDIT } from './constants/seed';
 import type { Vendor, VendorStatus, ChecklistStatus } from './types/vendor';
@@ -22,6 +23,7 @@ type ModalState = null | 'newVendor' | 'export' | 'fwReport' | { type: 'edit'; d
 
 export function App() {
   const { settings: S } = useSettings();
+  const { hasFeature, canAdd } = usePlan();
   const [role, setRole] = useState<Role>('ADMIN');
   const [tab, setTab] = useState('dashboard');
   const [modal, setModal] = useState<ModalState>(null);
@@ -72,7 +74,16 @@ export function App() {
   const topbarActions = (
     <>
       {tab === 'vendors' && can(role, 'create') && (
-        <button className="btn bp bsm" onClick={() => setModal('newVendor')}>
+        <button
+          className="btn bp bsm"
+          onClick={() => {
+            if (!canAdd(vendors.length, 'maxVendors')) {
+              alert('Free plan allows up to 3 vendors. Upgrade to Pro for unlimited.');
+              return;
+            }
+            setModal('newVendor');
+          }}
+        >
           + Add Vendor
         </button>
       )}
@@ -81,9 +92,11 @@ export function App() {
           Back to Vendors
         </button>
       )}
-      <button className="btn bs bsm" onClick={() => setModal('export')}>
-        Export
-      </button>
+      {hasFeature('csvExport') && (
+        <button className="btn bs bsm" onClick={() => setModal('export')}>
+          Export
+        </button>
+      )}
     </>
   );
 
@@ -153,7 +166,7 @@ export function App() {
         )}
         {tab === 'reports' && <Reports vendors={vendors} settings={S} />}
         {tab === 'auditlog' && <AuditLogPage globalAudit={globalAudit} />}
-        {tab === 'frameworks' && can(role, 'all') && (
+        {tab === 'frameworks' && can(role, 'all') && hasFeature('frameworks') && (
           <FrameworksAdmin
             fwNotes={fwNotes}
             onSave={(fwId: string, patch: Partial<FrameworkNotes>) => saveFwNote(fwId, patch, role)}
@@ -176,7 +189,9 @@ export function App() {
         />
       )}
       {modal === 'export' && <ExportModal vendors={vendors} onClose={() => setModal(null)} settings={S} />}
-      {modal === 'fwReport' && <FWReportModal vendors={vendors} onClose={() => setModal(null)} />}
+      {modal === 'fwReport' && hasFeature('fwComplianceReport') && (
+        <FWReportModal vendors={vendors} onClose={() => setModal(null)} />
+      )}
     </>
   );
 }

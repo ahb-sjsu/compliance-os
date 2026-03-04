@@ -11,6 +11,8 @@ import TasksTab from '../components/vendor/TasksTab';
 import RiskTab from '../components/vendor/RiskTab';
 import VendorFWTab from '../components/vendor/VendorFWTab';
 import VendorAuditTab from '../components/vendor/VendorAuditTab';
+import { usePlan } from '../plan/usePlan';
+import { UpgradePrompt } from '../plan/UpgradePrompt';
 
 interface VendorProfileProps {
   vendor: Vendor;
@@ -49,6 +51,7 @@ export default function VendorProfile({
   onUpdateFWControl,
   onUpdateVendorFW,
 }: VendorProfileProps) {
+  const { hasFeature } = usePlan();
   const [activeTab, setActiveTab] = useState<TabKey>('checklist');
   const done = (vendor.checklist || []).filter((i) => i.status === 'approved' || i.status === 'waived').length;
   const total = (vendor.checklist || []).length;
@@ -132,17 +135,19 @@ export default function VendorProfile({
                   Edit
                 </button>
               )}
-              <button
-                className="btn bsm"
-                style={{
-                  background: 'rgba(255,255,255,.15)',
-                  color: '#fff',
-                  border: '1px solid rgba(255,255,255,.25)',
-                }}
-                onClick={() => window.print()}
-              >
-                Print / PDF
-              </button>
+              {hasFeature('printPdf') && (
+                <button
+                  className="btn bsm"
+                  style={{
+                    background: 'rgba(255,255,255,.15)',
+                    color: '#fff',
+                    border: '1px solid rgba(255,255,255,.25)',
+                  }}
+                  onClick={() => window.print()}
+                >
+                  Print / PDF
+                </button>
+              )}
               {(can(role, 'approve') || can(role, 'all')) && (
                 <button
                   className="btn bsm"
@@ -200,11 +205,23 @@ export default function VendorProfile({
       </div>
 
       <div className="tabs">
-        {(['checklist', 'documents', 'tasks', 'risk', 'frameworks', 'audit'] as TabKey[]).map((t) => (
-          <div key={t} className={'tab' + (activeTab === t ? ' on' : '')} onClick={() => setActiveTab(t)}>
-            {t.charAt(0).toUpperCase() + t.slice(1)}
-          </div>
-        ))}
+        {(['checklist', 'documents', 'tasks', 'risk', 'frameworks', 'audit'] as TabKey[]).map((t) => {
+          const locked =
+            (t === 'risk' && !hasFeature('riskAssessment')) || (t === 'frameworks' && !hasFeature('frameworks'));
+          return (
+            <div
+              key={t}
+              className={'tab' + (activeTab === t ? ' on' : '')}
+              style={locked ? { opacity: 0.45, cursor: 'not-allowed' } : undefined}
+              onClick={() => {
+                if (!locked) setActiveTab(t);
+              }}
+            >
+              {t.charAt(0).toUpperCase() + t.slice(1)}
+              {locked && <UpgradePrompt feature={t} inline />}
+            </div>
+          );
+        })}
       </div>
 
       {activeTab === 'checklist' && <ChecklistTab vendor={vendor} role={role} onUpdate={onUpdateChecklist} />}
@@ -212,15 +229,23 @@ export default function VendorProfile({
         <DocumentsTab vendor={vendor} role={role} settings={settings} onAdd={onAddDocument} />
       )}
       {activeTab === 'tasks' && <TasksTab vendor={vendor} role={role} onAddTask={onAddTask} onToggle={onToggleTask} />}
-      {activeTab === 'risk' && <RiskTab vendor={vendor} role={role} onSave={onSaveRisk} />}
-      {activeTab === 'frameworks' && (
-        <VendorFWTab
-          vendor={vendor}
-          role={role}
-          onUpdateControl={onUpdateFWControl}
-          onUpdateVendorFW={onUpdateVendorFW}
-        />
-      )}
+      {activeTab === 'risk' &&
+        (hasFeature('riskAssessment') ? (
+          <RiskTab vendor={vendor} role={role} onSave={onSaveRisk} />
+        ) : (
+          <UpgradePrompt feature="Risk Assessment" />
+        ))}
+      {activeTab === 'frameworks' &&
+        (hasFeature('frameworks') ? (
+          <VendorFWTab
+            vendor={vendor}
+            role={role}
+            onUpdateControl={onUpdateFWControl}
+            onUpdateVendorFW={onUpdateVendorFW}
+          />
+        ) : (
+          <UpgradePrompt feature="Framework Compliance Tracking" />
+        ))}
       {activeTab === 'audit' && <VendorAuditTab vendor={vendor} />}
     </>
   );
