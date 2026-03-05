@@ -166,7 +166,7 @@ export function App() {
         )}
         {tab === 'reports' && <Reports vendors={vendors} settings={S} />}
         {tab === 'auditlog' && <AuditLogPage globalAudit={globalAudit} />}
-        {tab === 'frameworks' && can(role, 'all') && hasFeature('frameworks') && (
+        {tab === 'frameworks' && (can(role, 'all') || can(role, 'approve')) && hasFeature('frameworks') && (
           <FrameworksAdmin
             fwNotes={fwNotes}
             onSave={(fwId: string, patch: Partial<FrameworkNotes>) => saveFwNote(fwId, patch, role)}
@@ -174,7 +174,7 @@ export function App() {
             onOpenReport={() => setModal('fwReport')}
           />
         )}
-        {tab === 'settings' && can(role, 'all') && <SettingsPage />}
+        {tab === 'settings' && can(role, 'settings') && <SettingsPage />}
       </AppShell>
 
       {modal === 'newVendor' && (

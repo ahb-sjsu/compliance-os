@@ -2,7 +2,7 @@ import type { ReactNode } from 'react';
 import { Sidebar } from './Sidebar';
 import { Topbar } from './Topbar';
 import type { AppSettings } from '../../types/settings';
-import { ROLES, type Role } from '../../constants/roles';
+import { ROLES, ROLE_LABELS, type Role } from '../../constants/roles';
 
 interface AppShellProps {
   tab: string;
@@ -36,11 +36,9 @@ export function AppShell({
             background:
               role === 'ADMIN'
                 ? '#1a1816'
-                : role === 'REVIEWER'
+                : role === 'COMPLIANCE_ADMIN'
                   ? '#1e3a5f'
-                  : role === 'REQUESTER'
-                    ? '#3b1f0a'
-                    : '#2d2a26',
+                  : '#3b1f0a',
             color: 'rgba(255,255,255,.75)',
             fontSize: 12,
             padding: '8px 16px',
@@ -65,7 +63,7 @@ export function AppShell({
                 transition: 'all .12s',
               }}
             >
-              {r}
+              {ROLE_LABELS[r]}
             </span>
           ))}
         </div>

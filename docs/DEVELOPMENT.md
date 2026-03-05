@@ -84,7 +84,7 @@ npm run test:watch    # Watch mode
 | Encryption | `src/security/crypto.test.ts` | AES-256-GCM round-trip, tamper detection, key isolation |
 | Date helpers | `src/helpers/dates.test.ts` | Timestamp formatting, day calculations |
 | Vendor logic | `src/helpers/vendors.test.ts` | Checklist generation, framework suggestions, gate checks |
-| Roles/RBAC | `src/constants/roles.test.ts` | Permission checks for all 4 roles |
+| Roles/RBAC | `src/constants/roles.test.ts` | Permission checks for all 3 roles |
 | Frameworks | `src/constants/frameworks.test.ts` | Framework definitions, control catalogs |
 | Plan system | `src/plan/plans.test.ts` | Free/Pro limits and feature flags |
 

@@ -26,10 +26,10 @@ export function Sidebar({ tab, setTab, role, settings: S, missingCount }: Sideba
     { id: 'vendors', icon: '\uD83C\uDFE2', label: 'Vendors', badge: missingCount > 0 ? missingCount : null },
     { id: 'reports', icon: '\uD83D\uDCCA', label: 'Reports' },
     { id: 'auditlog', icon: '\uD83D\uDCCB', label: 'Audit Log' },
-    ...(can(role, 'all') && hasFeature('frameworks')
-      ? [{ id: 'frameworks', icon: '\uD83C\uDFDB', label: 'Frameworks (Admin)' }]
+    ...((can(role, 'all') || can(role, 'approve')) && hasFeature('frameworks')
+      ? [{ id: 'frameworks', icon: '\uD83C\uDFDB', label: 'Frameworks' }]
       : []),
-    ...(can(role, 'all') ? [{ id: 'settings', icon: '\u2699', label: 'Settings' }] : []),
+    ...(can(role, 'settings') ? [{ id: 'settings', icon: '\u2699', label: 'Settings' }] : []),
   ];
 
   return (
