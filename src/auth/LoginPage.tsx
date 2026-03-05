@@ -2,7 +2,7 @@ import { useGoogleLogin } from '@react-oauth/google';
 import { useAuth } from './useAuth';
 import type { AuthUser } from './context';
 
-export function LoginPage({ onSkip }: { onSkip: () => void }) {
+export function LoginPage() {
   const { setAuth } = useAuth();
 
   const login = useGoogleLogin({
@@ -44,7 +44,7 @@ export function LoginPage({ onSkip }: { onSkip: () => void }) {
         <div style={{ fontSize: 13, color: 'var(--text2)', marginBottom: 32, lineHeight: 1.6 }}>
           Vendor compliance management for small businesses.
           <br />
-          Sign in with Google to sync your data across devices.
+          Sign in with Google to get started.
         </div>
 
         <button
@@ -55,15 +55,10 @@ export function LoginPage({ onSkip }: { onSkip: () => void }) {
           Sign in with Google
         </button>
 
-        <div>
-          <button className="btn bs" onClick={onSkip} style={{ fontSize: 12 }}>
-            Continue without signing in
-          </button>
-        </div>
         <div style={{ fontSize: 11, color: 'var(--text3)', marginTop: 24, lineHeight: 1.5 }}>
-          Your data stays in your Google Drive.
+          Your data is encrypted and stored in your Google Drive.
           <br />
-          No account required — local storage works too.
+          We only access a hidden app folder — never your personal files.
         </div>
       </div>
     </div>
