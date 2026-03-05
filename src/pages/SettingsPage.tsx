@@ -150,9 +150,6 @@ export default function SettingsPage() {
             placeholder="v2.1 - Single-org ready"
           />
         </Row>
-        <Row label="Show Demo Role Bar" hint="The dark bar at the top for switching roles">
-          <Tog val={S.showRoleBar} onChange={(v) => update({ showRoleBar: v })} />
-        </Row>
       </div>
 
       <div className="settings-section" style={!hasFeature('customization') ? { opacity: 0.45, pointerEvents: 'none' } : undefined}>

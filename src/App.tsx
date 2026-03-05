@@ -7,13 +7,15 @@ import Reports from './pages/Reports';
 import AuditLogPage from './pages/AuditLogPage';
 import FrameworksAdmin from './pages/FrameworksAdmin';
 import SettingsPage from './pages/SettingsPage';
+import UsersPage from './pages/UsersPage';
 import { VendorModal } from './modals/VendorModal';
 import { ExportModal } from './modals/ExportModal';
 import { FWReportModal } from './modals/FWReportModal';
 import { useVendors, useFilteredVendors } from './hooks/useVendors';
 import { useSettings } from './settings/useSettings';
 import { usePlan } from './plan/usePlan';
-import { can, type Role } from './constants/roles';
+import { useUsers } from './users/useUsers';
+import { can } from './constants/roles';
 import { SEED_VENDORS, SEED_AUDIT } from './constants/seed';
 import type { Vendor, VendorStatus, ChecklistStatus } from './types/vendor';
 import type { ControlStatus } from './types/framework';
@@ -24,7 +26,8 @@ type ModalState = null | 'newVendor' | 'export' | 'fwReport' | { type: 'edit'; d
 export function App() {
   const { settings: S } = useSettings();
   const { hasFeature, canAdd } = usePlan();
-  const [role, setRole] = useState<Role>('ADMIN');
+  const { currentRole } = useUsers();
+  const role = currentRole!; // AuthGate guarantees user is registered
   const [tab, setTab] = useState('dashboard');
   const [modal, setModal] = useState<ModalState>(null);
   const [activeVendorId, setActiveVendorId] = useState<string | null>(null);
@@ -67,7 +70,8 @@ export function App() {
     vendor: activeVendor ? activeVendor.company : 'Vendor',
     reports: 'Reports',
     auditlog: 'Audit Log',
-    frameworks: 'Frameworks (Admin)',
+    frameworks: 'Frameworks',
+    users: 'Users',
     settings: 'Settings',
   };
 
@@ -106,7 +110,6 @@ export function App() {
         tab={tab}
         setTab={setTab}
         role={role}
-        setRole={setRole}
         settings={S}
         missingCount={missing}
         pageTitle={PAGE_TITLE[tab] || ''}
@@ -174,6 +177,7 @@ export function App() {
             onOpenReport={() => setModal('fwReport')}
           />
         )}
+        {tab === 'users' && can(role, 'settings') && <UsersPage />}
         {tab === 'settings' && can(role, 'settings') && <SettingsPage />}
       </AppShell>
 

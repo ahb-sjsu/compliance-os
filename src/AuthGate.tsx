@@ -1,15 +1,18 @@
 import { useAuth } from './auth/useAuth';
 import { LoginPage } from './auth/LoginPage';
+import { UsersProvider } from './users/UsersContext';
+import { useUsers } from './users/useUsers';
 import { PlanProvider } from './plan/PlanContext';
 import { SettingsProvider } from './settings/SettingsContext';
 import { StorageContextProvider } from './storage/StorageContext';
+import { AccessDenied } from './components/ui/AccessDenied';
 import { App } from './App';
 
-export function AuthGate() {
-  const { isAuthenticated } = useAuth();
+function RegistrationGate() {
+  const { isRegistered } = useUsers();
 
-  if (!isAuthenticated) {
-    return <LoginPage />;
+  if (!isRegistered) {
+    return <AccessDenied />;
   }
 
   return (
@@ -20,5 +23,19 @@ export function AuthGate() {
         </StorageContextProvider>
       </SettingsProvider>
     </PlanProvider>
+  );
+}
+
+export function AuthGate() {
+  const { isAuthenticated } = useAuth();
+
+  if (!isAuthenticated) {
+    return <LoginPage />;
+  }
+
+  return (
+    <UsersProvider>
+      <RegistrationGate />
+    </UsersProvider>
   );
 }

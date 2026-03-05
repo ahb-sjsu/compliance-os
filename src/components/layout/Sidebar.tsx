@@ -29,6 +29,7 @@ export function Sidebar({ tab, setTab, role, settings: S, missingCount }: Sideba
     ...((can(role, 'all') || can(role, 'approve')) && hasFeature('frameworks')
       ? [{ id: 'frameworks', icon: '\uD83C\uDFDB', label: 'Frameworks' }]
       : []),
+    ...(can(role, 'settings') ? [{ id: 'users', icon: '\uD83D\uDC65', label: 'Users' }] : []),
     ...(can(role, 'settings') ? [{ id: 'settings', icon: '\u2699', label: 'Settings' }] : []),
   ];
 
