@@ -6,7 +6,7 @@ import { RISK_QUESTIONS } from '../../constants/riskQuestions';
 interface RiskTabProps {
   vendor: Vendor;
   role: Role;
-  onSave: (vendorId: number, answers: boolean[]) => void;
+  onSave: (vendorId: string, answers: boolean[]) => void;
 }
 
 export default function RiskTab({ vendor, role, onSave }: RiskTabProps) {

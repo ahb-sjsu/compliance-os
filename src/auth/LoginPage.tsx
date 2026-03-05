@@ -17,12 +17,14 @@ export function LoginPage({ onSkip }: { onSkip: () => void }) {
           email: info.email,
           picture: info.picture || '',
         };
-        setAuth(tokenResponse.access_token, user);
-      } catch (err) {
-        console.error('Failed to fetch user info:', err);
+        setAuth(tokenResponse.access_token, user, tokenResponse.expires_in);
+      } catch {
+        // Auth failed — user can retry
       }
     },
-    onError: (err) => console.error('Google login failed:', err),
+    onError: () => {
+      // Login cancelled or failed — no action needed
+    },
     scope: 'openid email profile https://www.googleapis.com/auth/drive.appdata',
   });
 

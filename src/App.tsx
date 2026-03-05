@@ -27,7 +27,7 @@ export function App() {
   const [role, setRole] = useState<Role>('ADMIN');
   const [tab, setTab] = useState('dashboard');
   const [modal, setModal] = useState<ModalState>(null);
-  const [activeVendorId, setActiveVendorId] = useState<number | null>(null);
+  const [activeVendorId, setActiveVendorId] = useState<string | null>(null);
   const [search, setSearch] = useState('');
   const [filters, setFilters] = useState({ status: 'all', tier: 'all', missing: 'all' });
 
@@ -142,20 +142,20 @@ export function App() {
             vendor={activeVendor}
             role={role}
             settings={S}
-            onUpdateChecklist={(vendorId: number, itemId: string, status: ChecklistStatus, wNote?: string) =>
+            onUpdateChecklist={(vendorId: string, itemId: string, status: ChecklistStatus, wNote?: string) =>
               updateChecklist(vendorId, itemId, status, role, wNote)
             }
-            onChangeStatus={(vendorId: number, newStatus: VendorStatus) => changeStatus(vendorId, newStatus, role)}
-            onSaveRisk={(vendorId: number, answers: boolean[]) => saveRisk(vendorId, answers, role)}
+            onChangeStatus={(vendorId: string, newStatus: VendorStatus) => changeStatus(vendorId, newStatus, role)}
+            onSaveRisk={(vendorId: string, answers: boolean[]) => saveRisk(vendorId, answers, role)}
             onAddDocument={(
-              vendorId: number,
+              vendorId: string,
               doc: { name: string; type: string; expiry: string; sensitive: boolean },
             ) => addDocument(vendorId, doc, role)}
-            onAddTask={(vendorId: number, task: { text: string; due: string }) => addTask(vendorId, task, role)}
+            onAddTask={(vendorId: string, task: { text: string; due: string }) => addTask(vendorId, task, role)}
             onToggleTask={toggleTask}
             onEdit={(v: Vendor) => setModal({ type: 'edit', data: v })}
             onUpdateFWControl={(
-              vendorId: number,
+              vendorId: string,
               fwId: string,
               ctrlId: string,
               status: ControlStatus,

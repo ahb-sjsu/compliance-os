@@ -10,7 +10,7 @@ export interface AuthContextValue {
   isAuthenticated: boolean;
   user: AuthUser | null;
   accessToken: string | null;
-  setAuth: (token: string, user: AuthUser) => void;
+  setAuth: (token: string, user: AuthUser, expiresIn?: number) => void;
   signOut: () => void;
 }
 

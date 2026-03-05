@@ -14,7 +14,7 @@ function mkCtrl(
 
 export const SEED_VENDORS: Vendor[] = [
   {
-    id: 1,
+    id: 'seed-1',
     company: 'Apex Digital Solutions',
     dba: '',
     contact: 'Sarah Chen',
@@ -84,7 +84,7 @@ export const SEED_VENDORS: Vendor[] = [
     ],
     documents: [
       {
-        id: 1,
+        id: 'seed-doc-1',
         name: 'MSA_Apex_2024.pdf',
         type: 'Contract',
         sensitive: false,
@@ -93,7 +93,7 @@ export const SEED_VENDORS: Vendor[] = [
         expiry: '2026-11-15',
       },
       {
-        id: 2,
+        id: 'seed-doc-2',
         name: 'W9_Apex_2024.pdf',
         type: 'W-9',
         sensitive: true,
@@ -103,8 +103,8 @@ export const SEED_VENDORS: Vendor[] = [
       },
     ],
     tasks: [
-      { id: 1, text: 'Follow up on SOC2 report', done: false, due: '2026-03-15', createdBy: 'Admin User' },
-      { id: 2, text: 'Annual addendum renewal', done: false, due: '2026-11-01', createdBy: 'Admin User' },
+      { id: 'seed-task-1', text: 'Follow up on SOC2 report', done: false, due: '2026-03-15', createdBy: 'Admin User' },
+      { id: 'seed-task-2', text: 'Annual addendum renewal', done: false, due: '2026-11-01', createdBy: 'Admin User' },
     ],
     riskAnswers: [true, true, false, false, true, false, false, true, false, false],
     riskDone: true,
@@ -127,7 +127,7 @@ export const SEED_VENDORS: Vendor[] = [
     ],
   },
   {
-    id: 2,
+    id: 'seed-2',
     company: 'Meridian Law Group',
     dba: '',
     contact: 'David Park',
@@ -179,7 +179,7 @@ export const SEED_VENDORS: Vendor[] = [
     ],
     documents: [
       {
-        id: 3,
+        id: 'seed-doc-3',
         name: 'W9_Meridian_2024.pdf',
         type: 'W-9',
         sensitive: true,
@@ -188,7 +188,7 @@ export const SEED_VENDORS: Vendor[] = [
         expiry: '',
       },
     ],
-    tasks: [{ id: 3, text: 'Send security questionnaire', done: false, due: '2026-03-01', createdBy: 'Admin User' }],
+    tasks: [{ id: 'seed-task-3', text: 'Send security questionnaire', done: false, due: '2026-03-01', createdBy: 'Admin User' }],
     riskAnswers: [],
     riskDone: false,
     frameworks: ['CISA'],
@@ -196,7 +196,7 @@ export const SEED_VENDORS: Vendor[] = [
     auditLog: [{ ts: 'Jun 1, 2024, 8:00 AM', actor: 'Admin User', action: 'Vendor created', entity: 'vendor' }],
   },
   {
-    id: 3,
+    id: 'seed-3',
     company: 'Swift Logistics Co.',
     dba: '',
     contact: 'Marcus Lee',

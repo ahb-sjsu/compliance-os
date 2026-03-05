@@ -11,8 +11,8 @@ interface TaskForm {
 interface TasksTabProps {
   vendor: Vendor;
   role: Role;
-  onAddTask: (vendorId: number, task: TaskForm) => void;
-  onToggle: (vendorId: number, taskId: number) => void;
+  onAddTask: (vendorId: string, task: TaskForm) => void;
+  onToggle: (vendorId: string, taskId: string) => void;
 }
 
 function TaskRow({
@@ -21,8 +21,8 @@ function TaskRow({
   onToggle,
 }: {
   t: VendorTask;
-  vendorId: number;
-  onToggle: (vendorId: number, taskId: number) => void;
+  vendorId: string;
+  onToggle: (vendorId: string, taskId: string) => void;
 }) {
   const d2 = daysUntil(t.due);
   return (

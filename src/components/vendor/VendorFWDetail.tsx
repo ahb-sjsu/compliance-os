@@ -16,7 +16,7 @@ interface VendorFWDetailProps {
   showControls: boolean;
   setShowControls: Dispatch<SetStateAction<boolean>>;
   SM: StatusMap;
-  onUpdateControl: (vendorId: number, fwId: string, ctrlId: string, status: ControlStatus, wNote?: string) => void;
+  onUpdateControl: (vendorId: string, fwId: string, ctrlId: string, status: ControlStatus, wNote?: string) => void;
   setWaiving: Dispatch<SetStateAction<{ fwId: string; ctrlId: string } | null>>;
   setWNote: Dispatch<SetStateAction<string>>;
 }

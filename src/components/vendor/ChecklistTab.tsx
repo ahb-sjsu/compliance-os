@@ -5,7 +5,7 @@ import { can, type Role } from '../../constants/roles';
 interface ChecklistTabProps {
   vendor: Vendor;
   role: Role;
-  onUpdate: (vendorId: number, itemId: string, status: ChecklistStatus, wNote?: string) => void;
+  onUpdate: (vendorId: string, itemId: string, status: ChecklistStatus, wNote?: string) => void;
 }
 
 const SM: Record<string, { icon: string; cls: string }> = {

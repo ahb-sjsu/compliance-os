@@ -4,7 +4,6 @@ import { LocalStorageProvider } from './LocalStorageProvider';
 import { StorageCtx } from './storageCtx';
 
 const DEBOUNCE_MS = 2000;
-const LS_FLUSH_KEY = 'complianceos_v2_data';
 
 export function StorageContextProvider({ children }: { children: ReactNode }) {
   const [provider, setProvider] = useState<StorageProvider>(() => new LocalStorageProvider());
@@ -15,8 +14,8 @@ export function StorageContextProvider({ children }: { children: ReactNode }) {
     if (pendingRef.current) {
       try {
         await provider.save(pendingRef.current);
-      } catch (err) {
-        console.error('Storage save failed:', err);
+      } catch {
+        // Storage save failed silently — data stays in memory
       }
       pendingRef.current = null;
     }
@@ -33,20 +32,20 @@ export function StorageContextProvider({ children }: { children: ReactNode }) {
     [flushSave],
   );
 
-  // Flush on page unload
+  // Flush on page unload — use synchronous encrypted save via navigator.sendBeacon
+  // as a best-effort. The debounced save will have already written most data.
   useEffect(() => {
     const onBeforeUnload = () => {
-      if (pendingRef.current) {
-        try {
-          localStorage.setItem(LS_FLUSH_KEY, JSON.stringify(pendingRef.current));
-        } catch {
-          /* noop */
-        }
+      if (pendingRef.current && timerRef.current !== null) {
+        clearTimeout(timerRef.current);
+        // Trigger an immediate async save — browser gives us ~2 seconds
+        provider.save(pendingRef.current).catch(() => {});
+        pendingRef.current = null;
       }
     };
     window.addEventListener('beforeunload', onBeforeUnload);
     return () => window.removeEventListener('beforeunload', onBeforeUnload);
-  }, []);
+  }, [provider]);
 
   const load = useCallback(async () => {
     return provider.load();

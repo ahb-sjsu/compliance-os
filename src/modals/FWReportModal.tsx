@@ -11,7 +11,7 @@ interface FWReportModalProps {
 }
 
 export function FWReportModal({ vendors, onClose }: FWReportModalProps) {
-  const [selV, setSelV] = useState<number[]>(vendors.filter((v) => (v.frameworks || []).length > 0).map((v) => v.id));
+  const [selV, setSelV] = useState<string[]>(vendors.filter((v) => (v.frameworks || []).length > 0).map((v) => v.id));
   const [selF, setSelF] = useState<string[]>(Object.keys(FW));
   const [inclCtrls, setInclCtrls] = useState(true);
   const rDate = new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });

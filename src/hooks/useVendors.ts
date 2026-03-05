@@ -18,7 +18,7 @@ export function useVendors(initialVendors: Vendor[], initialAudit: AuditEntry[])
       setVendors((p) => p.map((x) => (x.id === v.id ? { ...x, ...v } : x)));
       addAudit(role, 'Vendor updated: ' + v.company, 'vendor');
     } else {
-      const id = Date.now();
+      const id = crypto.randomUUID();
       const suggested = suggestFW(v as Pick<Vendor, 'tier' | 'category'>);
       const fw: Record<string, { controls: ReturnType<typeof buildFWControls> }> = {};
       suggested.forEach((fid) => {
@@ -52,7 +52,7 @@ export function useVendors(initialVendors: Vendor[], initialAudit: AuditEntry[])
     }
   };
 
-  const changeStatus = (vendorId: number, newStatus: VendorStatus, role: string) => {
+  const changeStatus = (vendorId: string, newStatus: VendorStatus, role: string) => {
     const vendor = vendors.find((v) => v.id === vendorId);
     if (!vendor) return;
     if (newStatus === 'ACTIVE') {
@@ -77,7 +77,7 @@ export function useVendors(initialVendors: Vendor[], initialAudit: AuditEntry[])
     addAudit(role, vendor.company + ' status changed to ' + newStatus, 'vendor');
   };
 
-  const updateChecklist = (vendorId: number, itemId: string, status: ChecklistStatus, role: string, wNote?: string) => {
+  const updateChecklist = (vendorId: string, itemId: string, status: ChecklistStatus, role: string, wNote?: string) => {
     setVendors((p) =>
       p.map((v) => {
         if (v.id !== vendorId) return v;
@@ -103,7 +103,7 @@ export function useVendors(initialVendors: Vendor[], initialAudit: AuditEntry[])
     );
   };
 
-  const saveRisk = (vendorId: number, answers: boolean[], role: string) => {
+  const saveRisk = (vendorId: string, answers: boolean[], role: string) => {
     setVendors((p) =>
       p.map((v) => {
         if (v.id !== vendorId) return v;
@@ -119,14 +119,14 @@ export function useVendors(initialVendors: Vendor[], initialAudit: AuditEntry[])
   };
 
   const addDocument = (
-    vendorId: number,
+    vendorId: string,
     doc: { name: string; type: string; sensitive: boolean; expiry: string },
     role: string,
   ) => {
     setVendors((p) =>
       p.map((v) => {
         if (v.id !== vendorId) return v;
-        const nd = { ...doc, id: Date.now(), uploadedBy: role, uploadedAt: nowTs() };
+        const nd = { ...doc, id: crypto.randomUUID(), uploadedBy: role, uploadedAt: nowTs() };
         const entry: AuditEntry = {
           ts: nowTs(),
           actor: role,
@@ -138,19 +138,19 @@ export function useVendors(initialVendors: Vendor[], initialAudit: AuditEntry[])
     );
   };
 
-  const addTask = (vendorId: number, task: { text: string; due: string }, role: string) => {
+  const addTask = (vendorId: string, task: { text: string; due: string }, role: string) => {
     setVendors((p) =>
       p.map((v) => {
         if (v.id !== vendorId) return v;
         return {
           ...v,
-          tasks: [...(v.tasks || []), { ...task, id: Date.now(), done: false, createdBy: role }],
+          tasks: [...(v.tasks || []), { ...task, id: crypto.randomUUID(), done: false, createdBy: role }],
         };
       }),
     );
   };
 
-  const toggleTask = (vendorId: number, taskId: number) => {
+  const toggleTask = (vendorId: string, taskId: string) => {
     setVendors((p) =>
       p.map((v) => {
         if (v.id !== vendorId) return v;
@@ -160,7 +160,7 @@ export function useVendors(initialVendors: Vendor[], initialAudit: AuditEntry[])
   };
 
   const updateFWControl = (
-    vendorId: number,
+    vendorId: string,
     fwId: string,
     ctrlId: string,
     status: ControlStatus,
@@ -197,7 +197,7 @@ export function useVendors(initialVendors: Vendor[], initialAudit: AuditEntry[])
     );
   };
 
-  const updateVendorFW = (vendorId: number, fwIds: string[]) => {
+  const updateVendorFW = (vendorId: string, fwIds: string[]) => {
     setVendors((p) =>
       p.map((v) => {
         if (v.id !== vendorId) return v;

@@ -9,8 +9,8 @@ import VendorFWDetail from './VendorFWDetail';
 interface VendorFWTabProps {
   vendor: Vendor;
   role: Role;
-  onUpdateControl: (vendorId: number, fwId: string, ctrlId: string, status: ControlStatus, wNote?: string) => void;
-  onUpdateVendorFW: (vendorId: number, fwIds: string[]) => void;
+  onUpdateControl: (vendorId: string, fwId: string, ctrlId: string, status: ControlStatus, wNote?: string) => void;
+  onUpdateVendorFW: (vendorId: string, fwIds: string[]) => void;
 }
 
 const SM: Record<string, { icon: string; cls: string }> = {

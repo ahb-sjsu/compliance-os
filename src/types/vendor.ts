@@ -13,7 +13,7 @@ export interface ChecklistItem {
 }
 
 export interface VendorDocument {
-  id: number;
+  id: string;
   name: string;
   type: string;
   sensitive: boolean;
@@ -23,7 +23,7 @@ export interface VendorDocument {
 }
 
 export interface VendorTask {
-  id: number;
+  id: string;
   text: string;
   done: boolean;
   due: string;
@@ -38,7 +38,7 @@ export interface AuditEntry {
 }
 
 export interface Vendor {
-  id: number;
+  id: string;
   company: string;
   dba: string;
   contact: string;

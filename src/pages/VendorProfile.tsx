@@ -18,21 +18,21 @@ interface VendorProfileProps {
   vendor: Vendor;
   role: Role;
   settings: AppSettings;
-  onUpdateChecklist: (vendorId: number, itemId: string, status: ChecklistStatus, wNote?: string) => void;
-  onChangeStatus: (vendorId: number, status: VendorStatus) => void;
-  onSaveRisk: (vendorId: number, answers: boolean[]) => void;
-  onAddDocument: (vendorId: number, doc: { name: string; type: string; sensitive: boolean; expiry: string }) => void;
-  onAddTask: (vendorId: number, task: { text: string; due: string }) => void;
-  onToggleTask: (vendorId: number, taskId: number) => void;
+  onUpdateChecklist: (vendorId: string, itemId: string, status: ChecklistStatus, wNote?: string) => void;
+  onChangeStatus: (vendorId: string, status: VendorStatus) => void;
+  onSaveRisk: (vendorId: string, answers: boolean[]) => void;
+  onAddDocument: (vendorId: string, doc: { name: string; type: string; sensitive: boolean; expiry: string }) => void;
+  onAddTask: (vendorId: string, task: { text: string; due: string }) => void;
+  onToggleTask: (vendorId: string, taskId: string) => void;
   onEdit: (vendor: Vendor) => void;
   onUpdateFWControl: (
-    vendorId: number,
+    vendorId: string,
     fwId: string,
     controlId: string,
     status: FrameworkControl['status'],
     wNote?: string,
   ) => void;
-  onUpdateVendorFW: (vendorId: number, frameworks: string[]) => void;
+  onUpdateVendorFW: (vendorId: string, frameworks: string[]) => void;
 }
 
 type TabKey = 'checklist' | 'documents' | 'tasks' | 'risk' | 'frameworks' | 'audit';

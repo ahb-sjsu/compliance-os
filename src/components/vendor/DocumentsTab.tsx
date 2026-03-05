@@ -15,7 +15,7 @@ interface DocumentsTabProps {
   vendor: Vendor;
   role: Role;
   settings: AppSettings;
-  onAdd: (vendorId: number, doc: DocumentForm) => void;
+  onAdd: (vendorId: string, doc: DocumentForm) => void;
 }
 
 export default function DocumentsTab({ vendor, role, settings, onAdd }: DocumentsTabProps) {

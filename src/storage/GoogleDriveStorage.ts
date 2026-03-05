@@ -1,6 +1,7 @@
 import type { AppData, StorageProvider } from './types';
+import { getMasterKey, encrypt, decrypt, isCryptoAvailable } from '../security/crypto';
 
-const DATA_FILENAME = 'complianceos-data.json';
+const DATA_FILENAME = 'complianceos-data.enc';
 
 export class GoogleDriveStorage implements StorageProvider {
   private getAccessToken: () => string | null;
@@ -29,9 +30,19 @@ export class GoogleDriveStorage implements StorageProvider {
       const contentRes = await fetch(`https://www.googleapis.com/drive/v3/files/${fileId}?alt=media`, {
         headers: { Authorization: `Bearer ${token}` },
       });
-      return contentRes.json();
-    } catch (err) {
-      console.error('Google Drive load failed:', err);
+      const payload = await contentRes.text();
+
+      // Decrypt if crypto is available and payload looks encrypted (contains a dot separator)
+      if (isCryptoAvailable() && payload.includes('.') && !payload.startsWith('{')) {
+        const key = await getMasterKey();
+        const json = await decrypt(payload, key);
+        return JSON.parse(json);
+      }
+
+      // Legacy unencrypted JSON
+      return JSON.parse(payload);
+    } catch {
+      // Silent failure — caller handles null
       return null;
     }
   }
@@ -41,33 +52,43 @@ export class GoogleDriveStorage implements StorageProvider {
     if (!token) throw new Error('Not authenticated');
 
     try {
+      // Encrypt data before upload
+      let body: string;
+      let contentType: string;
+      if (isCryptoAvailable()) {
+        const key = await getMasterKey();
+        body = await encrypt(JSON.stringify(data), key);
+        contentType = 'application/octet-stream';
+      } else {
+        body = JSON.stringify(data);
+        contentType = 'application/json';
+      }
+
       const listRes = await fetch(
         `https://www.googleapis.com/drive/v3/files?spaces=appDataFolder&q=name='${DATA_FILENAME}'&fields=files(id)`,
         { headers: { Authorization: `Bearer ${token}` } },
       );
       const list = await listRes.json();
-      const body = JSON.stringify(data);
 
       if (list.files?.length) {
         await fetch(`https://www.googleapis.com/upload/drive/v3/files/${list.files[0].id}?uploadType=media`, {
           method: 'PATCH',
-          headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+          headers: { Authorization: `Bearer ${token}`, 'Content-Type': contentType },
           body,
         });
       } else {
         const metadata = { name: DATA_FILENAME, parents: ['appDataFolder'] };
         const form = new FormData();
         form.append('metadata', new Blob([JSON.stringify(metadata)], { type: 'application/json' }));
-        form.append('file', new Blob([body], { type: 'application/json' }));
+        form.append('file', new Blob([body], { type: contentType }));
         await fetch('https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart', {
           method: 'POST',
           headers: { Authorization: `Bearer ${token}` },
           body: form,
         });
       }
-    } catch (err) {
-      console.error('Google Drive save failed:', err);
-      throw err;
+    } catch {
+      throw new Error('Google Drive save failed');
     }
   }
 }
